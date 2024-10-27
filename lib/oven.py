@@ -320,6 +320,11 @@ class Max31856(TempSensorReal):
         temp = self.thermocouple.temperature
         for k,v in self.thermocouple.fault.items():
             if v:
+                # Clear the fault. There doesn't seem to be a a function in the library, so we do it manually.
+                from adafruit_max31856 import _MAX31856_CR0_REG, _MAX31856_CR0_FAULTCLR
+                cfg = self.thermocouple._read_register(_MAX31856_CR0_REG, 1)
+                cfg |= _MAX31856_CR0_FAULTCLR
+                self.thermocouple._write_register(_MAX31856_CR0_REG, cfg)
                 raise Max31856_Error(k)
         return temp
 
