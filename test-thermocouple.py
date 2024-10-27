@@ -62,7 +62,7 @@ print("Degrees displayed in %s\n" % (config.temp_scale))
 
 temp = 0
 while(True):
-    time.sleep(1)
+    time.sleep(0.1)
     try:
         ok = True
         temp = sensor.temperature

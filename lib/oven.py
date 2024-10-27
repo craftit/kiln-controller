@@ -318,14 +318,19 @@ class Max31856(TempSensorReal):
         # dict for errors and raise an exception.
         # and raise Max31856_Error(message)
         temp = self.thermocouple.temperature
+        ok = True
+        faults = ""
         for k,v in self.thermocouple.fault.items():
             if v:
+                ok = False
+                faults += "%s  " % (k)
                 # Clear the fault. There doesn't seem to be a a function in the library, so we do it manually.
-                from adafruit_max31856 import _MAX31856_CR0_REG, _MAX31856_CR0_FAULTCLR
-                cfg = self.thermocouple._read_register(_MAX31856_CR0_REG, 1)
-                cfg |= _MAX31856_CR0_FAULTCLR
-                self.thermocouple._write_register(_MAX31856_CR0_REG, cfg)
-                raise Max31856_Error(k)
+        if not ok:
+            from adafruit_max31856 import _MAX31856_CR0_REG, _MAX31856_CR0_FAULTCLR
+            cfg = self.thermocouple._read_register(_MAX31856_CR0_REG, 1)[0]
+            cfg |= _MAX31856_CR0_FAULTCLR
+            self.thermocouple._write_u8(_MAX31856_CR0_REG, cfg)
+            raise Max31856_Error(faults)
         return temp
 
 class Oven(threading.Thread):
