@@ -66,17 +66,17 @@ while(True):
     try:
         ok = True
         temp = sensor.temperature
+        faults = ""
         for k, v in sensor.fault.items():
             if v:
                 ok = False
-                print("Fault %s" % (k))
-
+                faults += "%s " % (k)
         if not ok:
+            print(f"Clearing faults: {faults}")
             from adafruit_max31856 import _MAX31856_CR0_REG, _MAX31856_CR0_FAULTCLR
             cfg = sensor._read_register(_MAX31856_CR0_REG, 1)[0]
             cfg |= _MAX31856_CR0_FAULTCLR
             sensor._write_u8(_MAX31856_CR0_REG, cfg)
-            print("Faults cleared")
             continue
         scale = "C"
         if config.temp_scale == "f":
