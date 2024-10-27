@@ -64,7 +64,20 @@ temp = 0
 while(True):
     time.sleep(1)
     try:
+        ok = True
         temp = sensor.temperature
+        for k, v in sensor.fault.items():
+            if v:
+                ok = False
+                print("Fault %s" % (k))
+
+        if not ok:
+            from adafruit_max31856 import _MAX31856_CR0_REG, _MAX31856_CR0_FAULTCLR
+            cfg = sensor._read_register(_MAX31856_CR0_REG, 1)
+            cfg |= _MAX31856_CR0_FAULTCLR
+            sensor._write_register(_MAX31856_CR0_REG, cfg)
+            print("Faults cleared")
+            continue
         scale = "C"
         if config.temp_scale == "f":
             temp = temp * (9/5) + 32 
