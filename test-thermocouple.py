@@ -73,7 +73,7 @@ while(True):
 
         if not ok:
             from adafruit_max31856 import _MAX31856_CR0_REG, _MAX31856_CR0_FAULTCLR
-            cfg = sensor._read_register(_MAX31856_CR0_REG, 1)
+            cfg = sensor._read_register(_MAX31856_CR0_REG, 1)[0]
             cfg |= _MAX31856_CR0_FAULTCLR
             sensor._write_u8(_MAX31856_CR0_REG, cfg)
             print("Faults cleared")
